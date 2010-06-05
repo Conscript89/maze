@@ -15,7 +15,9 @@ _Bool load_file(FILE *f, game *g)
   return 1;
 }
 
+/* maybe in future
 _Bool save_file(FILE *f, game *p)
 {
   return 0;
 }
+*/
