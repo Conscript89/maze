@@ -63,7 +63,6 @@ void show_direction(game *g, direction d)
 {
   short int dx,x;
   short int dy,y;
-  char curch;
   dx = x = dy = y = 0;
   switch (d) {
   case UP:
@@ -80,20 +79,29 @@ void show_direction(game *g, direction d)
     break;
   }
   for (position pos = g->pos;
-       pos.x >= 0 && pos.x < g->width && pos.y >= 0 && pos.y < g->height;
+	   !blocks_view_pos(*g, pos);
        pos.x += dx, pos.y += dy) {
-    if (blocks_view_pos(*g, pos))
-      break;
-    curch = g->data[pos.y*(g->width) + pos.x];
     for (int i = 0; i < 9; i++) {
       x = pos.x + (i%3 - 1);
       y = pos.y + (i/3 - 1);
-      curch = g->data[y*(g->width) + x];
-      move(y, x);
-      addch(curch);
+	  if (x < 0 || x >= g->width || y < 0 || y >= g->height)
+		continue;
+	  show_xy(g, x, y);
     }
   }
   do_move(g);
+}
+
+void show_pos(game *g, position pos)
+{
+  show_xy(g, pos.x, pos.y);
+}
+
+void show_xy(game *g, short int x, short int y)
+{
+  char curch = g->data[y*(g->width) + x];
+  move(y, x);
+  addch(curch);
 }
 
 _Bool blocks_pos(game g, position pos)
@@ -104,6 +112,8 @@ _Bool blocks_pos(game g, position pos)
 _Bool blocks_xy(game g, short int x, short int y)
 {
   char curch = current_char_xy(g, x, y);
+  if (x >= g->width || y >= g->height)
+	return 1;
   if (strchr(WALLS, curch) != NULL)
     return 1;
   if (curch >= 'A' && curch <= 'Z' && g.keys['A'-curch] == 0)

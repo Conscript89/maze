@@ -5,7 +5,7 @@
 
 CC=gcc
 # GDB and DWARF content is included for debugging purposes
-CFLAGS=-std=c99 -pedantic -Wall -Wextra -O2
+CFLAGS=-std=c99 -pedantic -Wall -Wextra -O2 -DDEBUG
 
 program=maze
 

@@ -26,13 +26,13 @@ int main(int argc, char *argv[])
     for (int i = 1; i < argc; i++) {
       FILE *f = fopen(argv[i], "r");
       if (load_file(f, &g)) {
-	fclose(f);
-	mainloop(&g);
-	free_game(&g);
-	clear();
-	refresh();
+		fclose(f);
+		mainloop(&g);
+		free_game(&g);
+		clear();
+		refresh();
       } else
-	show_error("File couldn't be opened or has incorrect format!");
+		show_error("File couldn't be opened or has incorrect format!");
     }
   cleanup();
 
@@ -74,7 +74,9 @@ void mainloop(game *g)
   short int dy;
   pos.x = 0;
   pos.y = 0;
-  //show_everything(g);
+  #ifdef DEBUG
+    show_everything(g);
+  #endif
   move_to_start(g);
   while (!ended && !g->finished) {
     show_visible(g);

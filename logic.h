@@ -26,6 +26,8 @@ void free_game(game *g);
 void show_everything(game *g);
 void show_visible(game *g);
 void show_direction(game *g, direction d);
+void show_pos(game *g, position pos);
+void show_xy(game *g, short int x, short int y);
 
 _Bool blocks_pos(game g, position pos);
 _Bool blocks_xy(game g, short int x, short int y);
