@@ -124,7 +124,6 @@ void show_xy(game *g, short int x, short int y)
 	waddch(g->game_window, curch);
 	wcolor_set(g->game_window, 1, NULL);
   }
-  wrefresh(g->game_window);
 }
 
 void update_status(game *g)
@@ -283,5 +282,4 @@ void do_move(game *g)
   }
 
   wmove(g->game_window, g->pos.y, g->pos.x);
-  wrefresh(g->game_window);
 }

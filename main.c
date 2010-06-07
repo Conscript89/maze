@@ -25,9 +25,9 @@ int main(int argc, char *argv[])
   if (!init())
     retval = 2;
   else {
-	set_game_window(&g, newwin(23, 80, 1, 0));
+	set_game_window(&g, newwin(22, 80, 1, 0));
 	set_status_window(&g, newwin(1, 80, 0, 0));
-	set_message_window(&g, newwin(1, 80, 24, 0));
+	set_message_window(&g, newwin(1, 80, 23, 0));
 	keypad(g.game_window, 1);
     for (int i = 1; i < argc; i++) {
       FILE *f = NULL;
@@ -94,6 +94,7 @@ void mainloop(game *g)
     switch (key) {
     case 'q':
       ended = 1;
+	  show_message(g, "You coward!");
       break;
     case KEY_LEFT:
 	case 'h':

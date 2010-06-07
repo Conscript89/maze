@@ -16,16 +16,12 @@ HEAD=logic.h saveload.h
 
 .PHONY: build
 .PHONY: run
-.PHONY: test
 .PHONY: clean
 
 build: ${program}
 
-test: ${program}
-	./${program} ./data/testmaze.txt
-
 run: ${program}
-	echo "program has to be run manually"
+	./${program} ./data/*
 
 clean:
 	rm -f ${OBJ} ${program}
