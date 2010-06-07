@@ -22,9 +22,14 @@ _Bool init_game(game *g, short int width, short int height)
   g->height = height;
   g->pos.x = 0;
   g->pos.y = 0;
-  g->score = 0;
   g->finished = 0;
+  reset_score(g);
   return 1;
+}
+
+void reset_score(game *g)
+{
+  g->score = 0;
 }
 
 void free_game(game *g)
@@ -124,8 +129,14 @@ void show_xy(game *g, short int x, short int y)
 
 void update_status(game *g)
 {
+  char keys[27];
+  for (int i = 0; i < 26; i++)
+	keys[i] = g->keys[i]?('a'+i):' ';
+  keys[26] = '\0';
+
+  wclear(g->status_window);
   wmove(g->status_window, 0, 1);
-  wprintw(g->status_window, "Foooooo");
+  wprintw(g->status_window, "Score: %d Keys: %s Time: ", g->score, keys);
   wrefresh(g->status_window);
   do_move(g);
 }
@@ -240,21 +251,26 @@ void do_move(game *g)
   char curch = current_char(*g);
   // pick up key
   if (curch >= 'a' && curch <= 'z') {
+	char msg[] = "Picked up key  ";
+	msg[strlen(msg)-1] = curch;
     g->keys[curch-'a'] = 1;
     g->score += 100;
     clear_current(g);
-	show_message(g, "Picked up key");
+	show_message(g, msg);
   }
   // open door
   if (curch >= 'A' && curch <= 'Z') {
+	char msg[] = "Opened door  ";
+	msg[strlen(msg)-1] = curch;
     clear_current(g);
     g->keys[curch-'A'] = 0;
-	show_message(g, "Opened door");
+	show_message(g, msg);
   }
   // pick up bonus
   if (curch == '*') {
     g->score += 1000;
     clear_current(g);
+	show_message(g, "Found bonus!");
   }
   // starting position
   if (curch == '^')
@@ -263,6 +279,7 @@ void do_move(game *g)
   if (curch == '$') {
     clear_current(g);
     g->finished = 1;
+	show_message(g, "Congratulation, you have found exit!");
   }
 
   wmove(g->game_window, g->pos.y, g->pos.x);
