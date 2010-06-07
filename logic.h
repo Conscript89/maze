@@ -1,6 +1,8 @@
 #ifndef LOGIC_H
 #define LOGIC_H
 
+#include <ncurses.h>
+
 #define WALLS "|+-"
 
 typedef struct {
@@ -13,21 +15,30 @@ typedef struct {
   short int height;
   position pos;
   char *data;
-  _Bool *keys;
+  _Bool keys[26];
   _Bool finished;
   int score;
+  WINDOW *game_window;
+  WINDOW *status_window;
+  WINDOW *message_window;
 } game;
 
 typedef enum { UP, RIGHT, DOWN, LEFT } direction;
 
 _Bool init_game(game *g, short int width, short int height);
 void free_game(game *g);
+void set_game_window(game *g, WINDOW *w);
+void set_status_window(game *g, WINDOW *w);
+void set_message_window(game *g, WINDOW *w);
 
 void show_everything(game *g);
 void show_visible(game *g);
 void show_direction(game *g, direction d);
 void show_pos(game *g, position pos);
 void show_xy(game *g, short int x, short int y);
+
+void update_status(game *g);
+void show_message(game *g, const char msg[]);
 
 _Bool blocks_pos(game g, position pos);
 _Bool blocks_xy(game g, short int x, short int y);

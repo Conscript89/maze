@@ -8,14 +8,13 @@ _Bool init_game(game *g, short int width, short int height)
 {
   if (g->data != NULL)
     return 0;
-  g->keys = (_Bool *) malloc(sizeof(_Bool)*26); // 26 is number of characters
   if (g->keys == NULL) {
     return 0;
   }
+  for (int i = 0; i < 26; i++)
+	g->keys[i] = 0;
   g->data = (char *) malloc(width*height+1);
   if (g->data == NULL) {
-    free(g->keys);
-    g->keys = NULL;
     return 0;
   }
   g->data[0] = '\0';
@@ -30,20 +29,32 @@ _Bool init_game(game *g, short int width, short int height)
 
 void free_game(game *g)
 {
-  if (g->data == NULL)
-    return;
-  free(g->data);
-  g->data = NULL;
-  free(g->keys);
-  g->keys = NULL;
+  if (g->data != NULL) {
+	free(g->data);
+	g->data = NULL;
+  }
   g->width = g->height = 0;
+}
+
+void set_game_window(game *g, WINDOW *w)
+{
+  g->game_window = w;
+}
+
+void set_status_window(game *g, WINDOW *w)
+{
+  g->status_window = w;
+}
+
+void set_message_window(game *g, WINDOW *w)
+{
+  g->message_window = w;
 }
 
 void show_everything(game *g)
 {
   if (g->data == NULL)
     return;
-  clear();
   for (int x = 0; x < g->width; x++)
 	for (int y = 0; y < g->height; y++)
 	  show_xy(g, x, y);
@@ -98,8 +109,34 @@ void show_pos(game *g, position pos)
 void show_xy(game *g, short int x, short int y)
 {
   char curch = g->data[y*(g->width) + x];
-  move(y, x);
-  addch(curch);
+  wmove(g->game_window, y, x);
+  if (blocks_xy(*g, x, y)) {
+	// print normally
+	waddch(g->game_window, curch);
+  } else {
+	// print colored
+	wcolor_set(g->game_window, 2, NULL);
+	waddch(g->game_window, curch);
+	wcolor_set(g->game_window, 1, NULL);
+  }
+  wrefresh(g->game_window);
+}
+
+void update_status(game *g)
+{
+  wmove(g->status_window, 0, 1);
+  wprintw(g->status_window, "Foooooo");
+  wrefresh(g->status_window);
+  do_move(g);
+}
+
+void show_message(game *g, const char msg[])
+{
+  wclear(g->message_window);
+  wmove(g->message_window, 0, 1);
+  waddstr(g->message_window, msg);
+  wrefresh(g->message_window);
+  do_move(g);
 }
 
 _Bool blocks_pos(game g, position pos)
@@ -114,7 +151,7 @@ _Bool blocks_xy(game g, short int x, short int y)
 	return 1;
   if (strchr(WALLS, curch) != NULL)
     return 1;
-  if (curch >= 'A' && curch <= 'Z' && g.keys['A'-curch] == 0)
+  if (curch >= 'A' && curch <= 'Z' && g.keys[curch-'A'] == 0)
     return 1;
   return 0;
 }
@@ -201,24 +238,33 @@ _Bool try_move(game *g, short int dx, short int dy)
 void do_move(game *g)
 {
   char curch = current_char(*g);
+  // pick up key
   if (curch >= 'a' && curch <= 'z') {
-    g->keys['a'-curch] = 1;
+    g->keys[curch-'a'] = 1;
     g->score += 100;
     clear_current(g);
+	show_message(g, "Picked up key");
   }
+  // open door
   if (curch >= 'A' && curch <= 'Z') {
     clear_current(g);
-    g->keys['A'-curch] = 0;
+    g->keys[curch-'A'] = 0;
+	show_message(g, "Opened door");
   }
+  // pick up bonus
   if (curch == '*') {
     g->score += 1000;
     clear_current(g);
   }
+  // starting position
   if (curch == '^')
     clear_current(g);
+  // finish
   if (curch == '$') {
     clear_current(g);
     g->finished = 1;
   }
-  move(g->pos.y, g->pos.x);
+
+  wmove(g->game_window, g->pos.y, g->pos.x);
+  wrefresh(g->game_window);
 }

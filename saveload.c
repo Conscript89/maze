@@ -17,8 +17,9 @@ _Bool load_file(FILE *f, game *g)
   // load game data
   fseek(f, 1L, SEEK_CUR);
   for (int i = 0; i < height; i++) {
-	for (int j = 0; j < width; j++)
+	for (int j = 0; j < width; j++) {
 	  g->data[i*width+j] = fgetc(f);
+	}
     fseek(f, 1L, SEEK_CUR);
   }
   g->data[(g->width)*(g->height)] = '\0';
