@@ -28,6 +28,7 @@ int main(int argc, char *argv[])
 	set_game_window(&g, newwin(23, 80, 1, 0));
 	set_status_window(&g, newwin(1, 80, 0, 0));
 	set_message_window(&g, newwin(1, 80, 24, 0));
+	keypad(g.game_window, 1);
     for (int i = 1; i < argc; i++) {
       FILE *f = NULL;
       if ((f = fopen(argv[i], "r")) != NULL && load_file(f, &g)) {
@@ -51,7 +52,6 @@ _Bool init()
   initscr();
   cbreak();
   noecho();
-  keypad(stdscr, 1);
   timeout(1000);
   nl();
   clear();
