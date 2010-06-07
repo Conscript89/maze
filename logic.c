@@ -44,11 +44,9 @@ void show_everything(game *g)
   if (g->data == NULL)
     return;
   clear();
-  move(0, 0);
-  for (int i = 0; i < g->height; i++) {
-    move(i, 0);
-    addnstr(g->data+(i*(g->width)), g->width);
-  }
+  for (int x = 0; x < g->width; x++)
+	for (int y = 0; y < g->height; y++)
+	  show_xy(g, x, y);
 }
 
 void show_visible(game *g)
@@ -112,7 +110,7 @@ _Bool blocks_pos(game g, position pos)
 _Bool blocks_xy(game g, short int x, short int y)
 {
   char curch = current_char_xy(g, x, y);
-  if (x >= g->width || y >= g->height)
+  if (x >= g.width || y >= g.height)
 	return 1;
   if (strchr(WALLS, curch) != NULL)
     return 1;
