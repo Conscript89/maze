@@ -1,6 +1,6 @@
 #include <ncurses.h>
 #include <time.h>
-#include <stdio.h>
+#include <stdlib.h>
 
 #include "logic.h"
 #include "saveload.h"
@@ -17,7 +17,7 @@ void show_error(WINDOW *w, const char msg[]);
 int main(int argc, char *argv[])
 {
   int retval = 0;
-  game g;
+  game *g = create_game();
   
   if (argc < 2)
     retval = 1;
@@ -25,23 +25,24 @@ int main(int argc, char *argv[])
   if (!init())
     retval = 2;
   else {
-	set_game_window(&g, newwin(22, 80, 1, 0));
-	set_status_window(&g, newwin(1, 80, 0, 0));
-	set_message_window(&g, newwin(1, 80, 23, 0));
-	keypad(g.game_window, 1);
+	set_game_window(g, newwin(22, 80, 1, 0));
+	set_status_window(g, newwin(1, 80, 0, 0));
+	set_message_window(g, newwin(1, 80, 23, 0));
+	keypad(g->game_window, 1);
     for (int i = 1; i < argc; i++) {
       FILE *f = NULL;
-      if ((f = fopen(argv[i], "r")) != NULL && load_file(f, &g)) {
-		fclose(f);	
-		mainloop(&g);
-		free_game(&g);
-		wclear(g.game_window);
-		wrefresh(g.game_window);
+      if ((f = fopen(argv[i], "r")) != NULL && load_file(f, g)) {
+		fclose(f);
+		mainloop(g);
+		free_game(g);
+		wclear(g->game_window);
+		wrefresh(g->game_window);
       } else
-		show_error(g.message_window,
+		show_error(g->message_window,
 				   "File couldn't be opened or has incorrect format!");
     }
   }
+  free(g);
   cleanup();
 
   return retval;

@@ -25,6 +25,7 @@ typedef struct {
 
 typedef enum { UP, RIGHT, DOWN, LEFT } direction;
 
+game * create_game();
 _Bool init_game(game *g, short int width, short int height);
 void reset_score(game *g);
 void free_game(game *g);

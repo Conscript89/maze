@@ -4,13 +4,21 @@
 #include <string.h>
 #include <ncurses.h>
 
+game * create_game()
+{
+  game *g = (game *) malloc(sizeof(game));
+  g->data = NULL;
+  g->game_window = NULL;
+  g->status_window = NULL;
+  g->message_window = NULL;
+  reset_score(g);
+  return g;
+}
+
 _Bool init_game(game *g, short int width, short int height)
 {
   if (g->data != NULL)
-    return 0;
-  if (g->keys == NULL) {
-    return 0;
-  }
+    free(g->data);
   for (int i = 0; i < 26; i++)
 	g->keys[i] = 0;
   g->data = (char *) malloc(width*height+1);
@@ -23,7 +31,6 @@ _Bool init_game(game *g, short int width, short int height)
   g->pos.x = 0;
   g->pos.y = 0;
   g->finished = 0;
-  reset_score(g);
   return 1;
 }
 
