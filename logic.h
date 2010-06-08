@@ -1,6 +1,7 @@
 #ifndef LOGIC_H
 #define LOGIC_H
 
+#include <time.h>
 #include <ncurses.h>
 
 #define WALLS "|+-"
@@ -18,6 +19,8 @@ typedef struct {
   _Bool keys[26];
   _Bool finished;
   int score;
+  time_t start_time;
+  time_t last_update;
   WINDOW *game_window;
   WINDOW *status_window;
   WINDOW *message_window;

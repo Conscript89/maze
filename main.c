@@ -29,7 +29,8 @@ int main(int argc, char *argv[])
 	set_status_window(g, newwin(1, 80, 0, 0));
 	set_message_window(g, newwin(1, 80, 23, 0));
 	keypad(g->game_window, 1);
-    for (int i = 1; i < argc; i++) {
+	wtimeout(g->game_window, 1000);
+	for (int i = 1; i < argc; i++) {
       FILE *f = NULL;
       if ((f = fopen(argv[i], "r")) != NULL && load_file(f, g)) {
 		fclose(f);
@@ -53,7 +54,6 @@ _Bool init()
   initscr();
   cbreak();
   noecho();
-  timeout(1000);
   nl();
   clear();
   curs_set(1);
@@ -132,9 +132,8 @@ void show_error(WINDOW *w, const char msg[])
   wclear(w);
   wmove(w, 0, 0);
   winsstr(w, msg);
+  wtimeout(w, -1);
 
   wrefresh(w);
-  timeout(-1);
-  getch();
-  timeout(1000);
+  wgetch(w);
 }

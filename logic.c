@@ -7,7 +7,10 @@
 game * create_game()
 {
   game *g = (game *) malloc(sizeof(game));
+  if (g == NULL)
+	return NULL;
   g->data = NULL;
+  g->start_time = g->last_update = time(NULL);
   g->game_window = NULL;
   g->status_window = NULL;
   g->message_window = NULL;
@@ -135,14 +138,22 @@ void show_xy(game *g, short int x, short int y)
 
 void update_status(game *g)
 {
+  time_t current = time(NULL);
+  time_t length = current - g->start_time;
   char keys[27];
   for (int i = 0; i < 26; i++)
 	keys[i] = g->keys[i]?('a'+i):' ';
   keys[26] = '\0';
 
+  g->score -= (current - g->last_update)*1;
+  if (g->score < 0)
+	g->score = 0;
+  g->last_update = current;
+
   wclear(g->status_window);
   wmove(g->status_window, 0, 1);
-  wprintw(g->status_window, "Score: %d Keys: %s Time: ", g->score, keys);
+  wprintw(g->status_window, "Score: %21d Keys: [%s] Time: %02d:%02d:%02d",
+		  g->score, keys, length/3600, length/60, length%60);
   wrefresh(g->status_window);
   do_move(g);
 }
